@@ -1,21 +1,23 @@
 import React from 'react';
-import { Avatar, Breadcrumb, Button, Layout, Nav, Skeleton } from '@douyinfe/semi-ui';
+import { Avatar, Breadcrumb, Button, Layout, Nav, Pagination, Skeleton } from '@douyinfe/semi-ui';
 import { IconBell, IconBytedanceLogo, IconHelpCircle, IconSemiLogo } from '@douyinfe/semi-icons';
+import { Outlet } from 'react-router';
+import useLocale from '../utils/useLocale';
 import { routes } from '../routes';
-
-const menus: any = (data: any[]) => {
-    return data?.map((item) => {
-        return {
-            itemKey: item.key,
-            text: item.name,
-            icon: item.icon,
-            items: menus(item.children),
-        };
-    });
-};
 
 const PageLayout = () => {
     const { Header, Footer, Sider, Content } = Layout;
+    const locale = useLocale();
+    const menus: any = (data: any[]) => {
+        return data?.map((item) => {
+            return {
+                itemKey: item.key,
+                text: locale ? locale[item.name] || item.name : item.name,
+                icon: item.icon,
+                items: menus(item.children),
+            };
+        });
+    };
     return (
         <Layout style={{ border: '1px solid var(--semi-color-border)' }}>
             <Header style={{ backgroundColor: 'var(--semi-color-bg-1)' }}>
@@ -96,10 +98,12 @@ const PageLayout = () => {
                             padding: '32px',
                         }}
                     >
-                        <Skeleton placeholder={<Skeleton.Paragraph rows={2} />} loading={true}>
+                        <Pagination total={100} showTotal showSizeChanger style={{ margin: 20 }} />
+                        <Skeleton placeholder={<Skeleton.Paragraph rows={2} />} loading={false}>
                             <p>Hi, Bytedance dance dance.</p>
                             <p>Hi, Bytedance dance dance.</p>
                         </Skeleton>
+                        <Outlet />
                     </div>
                 </Content>
             </Layout>
