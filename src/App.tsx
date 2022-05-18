@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { LocaleProvider } from '@douyinfe/semi-ui';
 import PageLayout from './layout/layout';
 import { GlobalContext } from './context';
 import LazyLoad from './utils/lazyload';
-import { routes } from './routes';
+import { defaultRoute, routes } from './routes';
 
 //  Generate routes
 function getFlattenRoutes() {
@@ -44,6 +44,7 @@ function App() {
             <GlobalContext.Provider value={{ locale }}>
                 <Routes>
                     <Route path="/" element={<PageLayout />}>
+                        <Route index element={<Navigate to={`/${defaultRoute}`} replace />} />
                         {flattenRoutes.map((route, index) => {
                             return (
                                 <Route
