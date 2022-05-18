@@ -10,6 +10,8 @@ import {
     IconUserStroked,
 } from '@douyinfe/semi-icons';
 
+export const defaultRoute = 'dashboard/workplace';
+
 export const routes = [
     {
         name: 'menu.dashboard',
