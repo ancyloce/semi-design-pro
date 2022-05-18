@@ -1,23 +1,40 @@
-import React from 'react';
-import { Avatar, Breadcrumb, Button, Layout, Nav, Pagination, Skeleton } from '@douyinfe/semi-ui';
+import React, { useEffect, useState } from 'react';
+import { Avatar, Breadcrumb, Button, Layout, Nav } from '@douyinfe/semi-ui';
 import { IconBell, IconBytedanceLogo, IconHelpCircle, IconSemiLogo } from '@douyinfe/semi-icons';
-import { Outlet } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import useLocale from '../utils/useLocale';
-import { routes } from '../routes';
+import { defaultRoute, routes } from '../routes';
 
 const PageLayout = () => {
     const { Header, Footer, Sider, Content } = Layout;
+    const [selectedKeys, setSelectedKeys] = useState<string[]>([defaultRoute]);
+    const navigate = useNavigate();
+    const location = useLocation();
     const locale = useLocale();
-    const menus: any = (data: any[]) => {
+
+    const getMenus: any = (data: any[]) => {
         return data?.map((item) => {
             return {
                 itemKey: item.key,
                 text: locale ? locale[item.name] || item.name : item.name,
                 icon: item.icon,
-                items: menus(item.children),
+                items: getMenus(item.children),
             };
         });
     };
+
+    const onSelect = (key: number | string) => {
+        if (key) {
+            navigate(`${key}`, {});
+            setSelectedKeys([`${key}`]);
+        }
+    };
+
+    useEffect(() => {
+        const { pathname } = location;
+        setSelectedKeys([`${pathname}`.replace('/', '')]);
+    }, [location]);
+
     return (
         <Layout style={{ border: '1px solid var(--semi-color-border)' }}>
             <Header style={{ backgroundColor: 'var(--semi-color-bg-1)' }}>
@@ -71,8 +88,13 @@ const PageLayout = () => {
                 <Sider style={{ backgroundColor: 'var(--semi-color-bg-1)' }}>
                     <Nav
                         style={{ maxWidth: 220, height: '100%' }}
-                        defaultSelectedKeys={['Home']}
-                        items={menus(routes)}
+                        defaultSelectedKeys={selectedKeys}
+                        onSelect={({ itemKey, selectedKeys }) => {
+                            console.log(selectedKeys);
+                            onSelect(itemKey);
+                        }}
+                        limitIndent={false}
+                        items={getMenus(routes)}
                         footer={{
                             collapseButton: true,
                         }}
@@ -98,11 +120,6 @@ const PageLayout = () => {
                             padding: '32px',
                         }}
                     >
-                        <Pagination total={100} showTotal showSizeChanger style={{ margin: 20 }} />
-                        <Skeleton placeholder={<Skeleton.Paragraph rows={2} />} loading={false}>
-                            <p>Hi, Bytedance dance dance.</p>
-                            <p>Hi, Bytedance dance dance.</p>
-                        </Skeleton>
                         <Outlet />
                     </div>
                 </Content>
