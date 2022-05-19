@@ -6,6 +6,7 @@
         "@douyinfe/semi-ui": "^2.10.1"
     },
     "devDependencies": {
+        "@craco/craco": "^6.4.3",
         "@testing-library/jest-dom": "^5.16.4",
         "@testing-library/react": "^13.2.0",
         "@testing-library/user-event": "^14.1.1",
@@ -46,13 +47,14 @@
     },
     "scripts": {
         "start": "vite",
-        "build": "react-scripts build",
+        "build": "GENERATE_SOURCEMAP=false craco build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint:js": "eslint src/ --fix --cache --quiet --ext .js,.jsx,.ts,.tsx",
         "lint:css": "stylelint --aei .less .scss .css src",
         "prepare": "husky install"
     },
+    "cracoConfig": "webpack.config.js",
     "eslintConfig": {
         "extends": [
             "react-app",
