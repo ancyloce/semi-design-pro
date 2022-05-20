@@ -60,6 +60,7 @@ const PageLayout = () => {
                     </Footer>
                 </Content>
             </Layout>
+
         </Layout>
     );
 };
