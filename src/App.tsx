@@ -1,25 +1,63 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { LocaleProvider } from '@douyinfe/semi-ui';
+import PageLayout from './layout/layout';
+import { GlobalContext } from './context';
+import LazyLoad from './utils/lazyload';
+import { defaultRoute, routes } from './routes';
+
+//  Generate routes
+function getFlattenRoutes() {
+    const res: any[] = [];
+
+    function travel(_routes: any) {
+        _routes.forEach((route: any) => {
+            if (route.componentPath) {
+                route.component = <LazyLoad component={route?.componentPath} />;
+                res.push(route);
+            } else if (route?.children?.length) {
+                travel(route.children);
+            }
+        });
+    }
+
+    travel(routes);
+    return res;
+}
 
 function App() {
+    const [locale, setLocale] = useState();
+    const localeName = localStorage.getItem('lang') || 'en_US';
+    const flattenRoutes = useMemo(() => getFlattenRoutes() || [], []);
+
+    async function fetchLocale(ln?: string) {
+        const i18n = (await import(`./locale/${ln}.ts`)).default;
+        setLocale(i18n);
+    }
+
+    useEffect(() => {
+        fetchLocale(localeName);
+    }, []);
+
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
-        </div>
+        <LocaleProvider locale={locale}>
+            <GlobalContext.Provider value={{ locale }}>
+                <Routes>
+                    <Route path="/" element={<PageLayout />}>
+                        <Route index element={<Navigate to={`/${defaultRoute}`} replace />} />
+                        {flattenRoutes.map((route, index) => {
+                            return (
+                                <Route
+                                    key={index}
+                                    path={`/${route.key}`}
+                                    element={route.component}
+                                />
+                            );
+                        })}
+                    </Route>
+                </Routes>
+            </GlobalContext.Provider>
+        </LocaleProvider>
     );
 }
 
