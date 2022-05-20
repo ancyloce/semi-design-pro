@@ -3,6 +3,7 @@ import { defaultRoute, routes } from '@/routes';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import useLocale from '@/utils/useLocale';
+import styles from './index.module.scss';
 
 function LayoutMenu() {
     const [selectedKeys, setSelectedKeys] = useState<string[]>([defaultRoute]);
@@ -35,7 +36,7 @@ function LayoutMenu() {
     }, [location]);
 
     return (
-        <Sider style={{ backgroundColor: 'var(--semi-color-bg-1)' }}>
+        <Sider className={styles.menu}>
             <Nav
                 style={{ maxWidth: 220, height: '100%' }}
                 defaultSelectedKeys={selectedKeys}
