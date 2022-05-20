@@ -10,12 +10,11 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 const history = createBrowserHistory({ window });
 
 root.render(
-    // semi design is buggy, turn off strict mode temporarily
-    // <React.StrictMode>
-    <HistoryRouter history={history}>
-        <App />
-    </HistoryRouter>
-    // </React.StrictMode>
+    <React.StrictMode>
+        <HistoryRouter history={history}>
+            <App />
+        </HistoryRouter>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
