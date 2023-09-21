@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import {
+    createBrowserRouter,
+    createRoutesFromElements,
+    Navigate,
+    Route,
+    RouterProvider,
+} from 'react-router-dom';
 import { LocaleProvider } from '@douyinfe/semi-ui';
 import PageLayout from './layout/layout';
 import { GlobalContext } from './context';
@@ -25,6 +31,10 @@ function getFlattenRoutes() {
     return res;
 }
 
+function Fallback() {
+    return <p>Performing initial data load</p>;
+}
+
 function App() {
     const [locale, setLocale] = useState();
     const localeName = localStorage.getItem('lang') || 'en_US';
@@ -39,23 +49,28 @@ function App() {
         fetchLocale(localeName);
     }, []);
 
+    const router = createBrowserRouter(
+        createRoutesFromElements(
+            <Route path="/" element={<PageLayout />}>
+                <Route index element={<Navigate to={`/${defaultRoute}`} replace />} />
+                {flattenRoutes.map((route, index) => {
+                    return (
+                        <Route
+                            key={index}
+                            index={route?.index}
+                            path={`/${route?.key}`}
+                            element={route?.component}
+                        />
+                    );
+                })}
+            </Route>
+        )
+    );
+
     return (
         <LocaleProvider locale={locale}>
             <GlobalContext.Provider value={{ locale }}>
-                <Routes>
-                    <Route path="/" element={<PageLayout />}>
-                        <Route index element={<Navigate to={`/${defaultRoute}`} replace />} />
-                        {flattenRoutes.map((route, index) => {
-                            return (
-                                <Route
-                                    key={index}
-                                    path={`/${route.key}`}
-                                    element={route.component}
-                                />
-                            );
-                        })}
-                    </Route>
-                </Routes>
+                <RouterProvider router={router} fallbackElement={<Fallback />} />
             </GlobalContext.Provider>
         </LocaleProvider>
     );
